@@ -1,9 +1,10 @@
 declare global {
   interface Window {
-    OpenAI?: {
-      chatkit?: {
-        mount: (config: any) => void;
-      };
+    chatkit?: {
+      render: (config: {
+        clientSecret: string;
+        containerId: string;
+      }) => void;
     };
   }
 }
