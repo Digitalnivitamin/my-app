@@ -16,7 +16,7 @@ export default function Home() {
         }
         
         const { client_secret } = await res.json();
-        console.log('Client secret received:', client_secret ? 'yes' : 'no');
+        console.log('Client secret received');
 
         // Load ChatKit script
         const script = document.createElement('script');
@@ -26,23 +26,33 @@ export default function Home() {
         script.onload = () => {
           console.log('ChatKit script loaded');
           
-          // Wait a moment for ChatKit to be available
+          // Wait for ChatKit to be available
           setTimeout(() => {
-            if ((window as any).chatkit) {
-              console.log('ChatKit object found, initializing...');
-              try {
-                (window as any).chatkit.render({
-                  clientSecret: client_secret,
-                  containerId: 'chatkit-root',
-                });
-                console.log('ChatKit rendered successfully');
-              } catch (err) {
-                console.error('ChatKit render error:', err);
-              }
+            // Check multiple possible object locations
+            const chatkit = (window as any).chatkit 
+              || (window as any).OpenAI?.chatkit 
+              || (window as any).ChatKit
+              || (window as any).OpenAIChatKit;
+            
+            console.log('Window keys:', Object.keys(window).filter(k => 
+              k.toLowerCase().includes('chat') || k.toLowerCase().includes('openai')
+            ));
+
+            if (chatkit && chatkit.render) {
+              console.log('ChatKit render found');
+              chatkit.render({
+                clientSecret: client_secret,
+                containerId: 'chatkit-root',
+              });
             } else {
-              console.error('ChatKit object not found on window');
+              console.log('Available chatkit object:', chatkit);
+              console.log('Full window object sample:', {
+                hasOpenAI: !!(window as any).OpenAI,
+                hasChatkit: !!(window as any).chatkit,
+                keys: Object.keys(window).slice(0, 20)
+              });
             }
-          }, 500);
+          }, 1000);
         };
 
         script.onerror = () => {
