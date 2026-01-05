@@ -1,23 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { OpenAI } from 'openai';
 
-export async function POST() {
+export async function POST(request: NextRequest) {
   try {
-    const response = await fetch('https://api.openai.com/v1/chatkit/sessions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'OpenAI-Beta': 'chatkit_beta=v1',
-        'Authorization': `Bearer ${process.env.OPENAI_API_SECRET_KEY}`,
-      },
-      body: JSON.stringify({
-        workflow: { id: process.env.OPENAI_WORKFLOW_ID },
-        user: 'user-' + Math.random().toString(36).substr(2, 9),
-      }),
+    const openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_SECRET_KEY,
     });
 
-    const { client_secret } = await response.json();
-    return NextResponse.json({ client_secret });
+    const session = await openai.chatkit.sessions.create({
+      workflow: { id: process.env.OPENAI_WORKFLOW_ID },
+      user: 'user-' + Math.random().toString(36).substr(2, 9),
+    });
+
+    return NextResponse.json({ client_secret: session.client_secret });
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to create session' }, { status: 500 });
+    console.error('ChatKit session error:', error);
+    return NextResponse.json(
+      { error: 'Failed to create session' },
+      { status: 500 }
+    );
   }
 }
