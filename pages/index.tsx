@@ -18,21 +18,30 @@ export default function Home() {
         const { client_secret } = await res.json();
         console.log('Client secret received:', client_secret);
 
-        // Wait a moment for DOM to be ready
-        await new Promise(resolve => setTimeout(resolve, 500));
-
         const chatkit = document.querySelector('openai-chatkit') as any;
         console.log('ChatKit element found:', !!chatkit);
 
-        if (chatkit && typeof chatkit.setOptions === 'function') {
-          chatkit.setOptions({
-            api: {
-              getClientSecret: async () => client_secret,
-            },
-          });
-          console.log('ChatKit options set');
+        if (chatkit) {
+          // Wait for setOptions to be available
+          let attempts = 0;
+          const waitForSetOptions = setInterval(() => {
+            attempts++;
+            if (typeof chatkit.setOptions === 'function') {
+              clearInterval(waitForSetOptions);
+              console.log('setOptions is now available');
+              chatkit.setOptions({
+                api: {
+                  getClientSecret: async () => client_secret,
+                },
+              });
+              console.log('ChatKit options set');
+            } else if (attempts > 20) {
+              clearInterval(waitForSetOptions);
+              console.error('Timeout waiting for setOptions');
+            }
+          }, 100);
         } else {
-          console.error('ChatKit not ready or setOptions not available');
+          console.error('ChatKit element not found');
         }
       } catch (error) {
         console.error('Error initializing ChatKit:', error);
