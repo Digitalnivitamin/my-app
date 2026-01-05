@@ -23,7 +23,7 @@ export default function Home() {
   return (
     <div>
       <h1>ChatKit Agent</h1>
-      <ChatKit />
+      <ChatKit control={control} />
     </div>
   );
 }
