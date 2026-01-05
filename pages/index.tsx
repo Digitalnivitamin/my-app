@@ -18,8 +18,8 @@ export default function Home() {
         const { client_secret } = await res.json();
         console.log('Client secret received:', client_secret);
 
-        // Get the ChatKit element
-        const chatkit = document.querySelector('openai-chatkit');
+        // Get the ChatKit element and cast to any
+        const chatkit = document.querySelector('openai-chatkit') as any;
         if (chatkit) {
           chatkit.setOptions({
             api: {
