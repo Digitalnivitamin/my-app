@@ -7,7 +7,7 @@ export default function Home() {
     const initChatKit = async () => {
       try {
         // Get the client secret from your backend
-        const res = await fetch('/api/chatkit/session/', {
+        const res = await fetch('/api/chatkit/session', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
