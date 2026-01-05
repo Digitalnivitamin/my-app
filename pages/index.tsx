@@ -42,9 +42,9 @@ export default function Home() {
   return (
     <div>
       <h1>Superko Agent</h1>
-      <div style={{ height: '600px' }}>
-        <openai-chatkit></openai-chatkit>
-      </div>
+      <div style={{ height: '100vh', width: '100%', position: 'relative' }}>
+  <openai-chatkit></openai-chatkit>
+</div>
     </div>
   );
 }
