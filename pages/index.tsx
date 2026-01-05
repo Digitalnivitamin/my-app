@@ -1,15 +1,24 @@
 'use client';
 
-import { ChatKit, useChatKit } from '@openai/chatkit-react';
+import { useEffect } from 'react';
 
 export default function Home() {
-  const { control } = useChatKit({
-    api: {
-      async getClientSecret(existing: string | null) {
-        if (existing) {
-          return existing;
-        }
+  useEffect(() => {
+    // Declare the window type
+    declare global {
+      interface Window {
+        chatkit: any;
+      }
+    }
 
+    // Load ChatKit script
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/@openai/chatkit-js@latest/dist/index.js';
+    script.async = true;
+    document.body.appendChild(script);
+
+    script.onload = () => {
+      const initChatKit = async () => {
         const res = await fetch('/api/chatkit/session', {
           method: 'POST',
           headers: {
@@ -17,17 +26,23 @@ export default function Home() {
           },
         });
         const { client_secret } = await res.json();
-        return client_secret;
-      },
-    },
-  });
+
+        if (window.chatkit) {
+          window.chatkit.render({
+            clientSecret: client_secret,
+            containerId: 'chatkit-root',
+          });
+        }
+      };
+
+      initChatKit();
+    };
+  }, []);
 
   return (
-    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div>
       <h1>ChatKit Agent</h1>
-      <div style={{ flex: 1 }}>
-        <ChatKit control={control} />
-      </div>
+      <div id="chatkit-root" style={{ height: '600px', width: '100%' }}></div>
     </div>
   );
 }
