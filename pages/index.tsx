@@ -18,13 +18,17 @@ export default function Home() {
         const { client_secret } = await res.json();
         console.log('Client secret received:', client_secret);
 
-        // Get the ChatKit element and cast to any
+        // Wait for ChatKit to be ready
         const chatkit = document.querySelector('openai-chatkit') as any;
         if (chatkit) {
-          chatkit.setOptions({
-            api: {
-              getClientSecret: async () => client_secret,
-            },
+          // Wait for the ready event
+          chatkit.addEventListener('chatkit.ready', () => {
+            console.log('ChatKit is ready');
+            chatkit.setOptions({
+              api: {
+                getClientSecret: async () => client_secret,
+              },
+            });
           });
         }
       } catch (error) {
