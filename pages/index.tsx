@@ -2,12 +2,6 @@
 
 import { useEffect } from 'react';
 
-declare global {
-  interface Window {
-    OpenAI: any;
-  }
-}
-
 export default function Home() {
   useEffect(() => {
     // Load ChatKit script from CDN
