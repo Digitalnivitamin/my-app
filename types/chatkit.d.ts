@@ -1,9 +1,5 @@
-declare global {
-  interface Window {
-    chatkit?: {
-      render: (config: any) => void;
-    };
+declare namespace JSX {
+  interface IntrinsicElements {
+    'openai-chatkit': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
   }
 }
-
-export {};
