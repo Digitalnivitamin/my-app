@@ -18,18 +18,21 @@ export default function Home() {
         const { client_secret } = await res.json();
         console.log('Client secret received:', client_secret);
 
-        // Wait for ChatKit to be ready
+        // Wait a moment for DOM to be ready
+        await new Promise(resolve => setTimeout(resolve, 500));
+
         const chatkit = document.querySelector('openai-chatkit') as any;
-        if (chatkit) {
-          // Wait for the ready event
-          chatkit.addEventListener('chatkit.ready', () => {
-            console.log('ChatKit is ready');
-            chatkit.setOptions({
-              api: {
-                getClientSecret: async () => client_secret,
-              },
-            });
+        console.log('ChatKit element found:', !!chatkit);
+
+        if (chatkit && typeof chatkit.setOptions === 'function') {
+          chatkit.setOptions({
+            api: {
+              getClientSecret: async () => client_secret,
+            },
           });
+          console.log('ChatKit options set');
+        } else {
+          console.error('ChatKit not ready or setOptions not available');
         }
       } catch (error) {
         console.error('Error initializing ChatKit:', error);
@@ -42,9 +45,9 @@ export default function Home() {
   return (
     <div>
       <h1>Superko Agent</h1>
-      <div style={{ height: '100vh', width: '100%', position: 'relative' }}>
-  <openai-chatkit></openai-chatkit>
-</div>
+      <div style={{ height: '100vh', width: '100%' }}>
+        <openai-chatkit></openai-chatkit>
+      </div>
     </div>
   );
 }
