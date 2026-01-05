@@ -2,11 +2,18 @@
 
 import { useEffect } from 'react';
 
+declare global {
+  interface Window {
+    chatkit?: {
+      render: (config: any) => void;
+    };
+  }
+}
+
 export default function Home() {
   useEffect(() => {
     const initChatKit = async () => {
       try {
-        // Get the client secret from your backend
         const res = await fetch('/api/chatkit/session', {
           method: 'POST',
           headers: {
@@ -16,32 +23,20 @@ export default function Home() {
         const { client_secret } = await res.json();
         console.log('Client secret received:', client_secret);
 
-        // Load ChatKit script
-        const script = document.createElement('script');
-        script.src = 'https://cdn.jsdelivr.net/npm/@openai/chatkit-js@latest';
-        script.async = true;
-
-        script.onload = () => {
-          console.log('ChatKit script loaded');
-          
+        // Wait a bit for script to load
+        setTimeout(() => {
           if (window.chatkit) {
-            console.log('ChatKit object found, rendering...');
+            console.log('ChatKit found, rendering...');
             window.chatkit.render({
               clientSecret: client_secret,
               containerId: 'chatkit-root',
             });
           } else {
-            console.error('ChatKit object not found on window');
+            console.error('ChatKit still not available');
           }
-        };
-
-        script.onerror = () => {
-          console.error('Failed to load ChatKit script');
-        };
-
-        document.body.appendChild(script);
+        }, 2000);
       } catch (error) {
-        console.error('Error initializing ChatKit:', error);
+        console.error('Error:', error);
       }
     };
 
