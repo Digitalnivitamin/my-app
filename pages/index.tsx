@@ -10,7 +10,7 @@ export default function Home() {
 
     script.onload = () => {
       // Initialize ChatKit after script loads
-      if (window.OpenAI && window.OpenAI.ChatKit) {
+      if (window.OpenAI?.ChatKit) {
         window.OpenAI.ChatKit.init({
           api: {
             async getClientSecret(existing) {
