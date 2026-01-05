@@ -4,30 +4,47 @@ import { useEffect } from 'react';
 
 export default function Home() {
   useEffect(() => {
-    const initChat = async () => {
+    const initChatKit = async () => {
       try {
+        // Get session from your backend
         const res = await fetch('/api/chatkit/session', {
           method: 'POST',
         });
-        const data = await res.json();
-        console.log('Session created:', data.client_secret);
+        const { client_secret } = await res.json();
+        console.log('Session created:', client_secret);
+
+        // Load ChatKit from OpenAI CDN
+        const script = document.createElement('script');
+        script.src = 'https://cdn.openai.com/chatkit/chatkit.js';
+        script.async = true;
+
+        script.onload = () => {
+          console.log('ChatKit library loaded');
+          if ((window as any).OpenAIChatKit) {
+            (window as any).OpenAIChatKit.render({
+              clientSecret: client_secret,
+              containerId: 'chatkit-root',
+            });
+          }
+        };
+
+        script.onerror = () => {
+          console.error('Failed to load ChatKit script');
+        };
+
+        document.body.appendChild(script);
       } catch (error) {
-        console.error('Error:', error);
+        console.error('Error initializing ChatKit:', error);
       }
     };
 
-    initChat();
+    initChatKit();
   }, []);
 
   return (
     <div style={{ padding: '20px' }}>
       <h1>Superko ChatKit</h1>
-      <p>ChatKit widget will appear below:</p>
-      <iframe
-        src={`https://chatkit.openai.com/embed?workflow_id=wf_694eaa37cbd0819082a033c03a980cda05ca5c92ab37fcea`}
-        style={{ width: '100%', height: '600px', border: 'none' }}
-        title="ChatKit"
-      />
+      <div id="chatkit-root" style={{ width: '100%', height: '600px', border: '1px solid #ccc' }}></div>
     </div>
   );
 }
