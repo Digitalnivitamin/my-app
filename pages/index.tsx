@@ -2,14 +2,6 @@
 
 import { useEffect } from 'react';
 
-declare global {
-  interface Window {
-    chatkit?: {
-      render: (config: any) => void;
-    };
-  }
-}
-
 export default function Home() {
   useEffect(() => {
     const initChatKit = async () => {
