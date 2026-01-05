@@ -1,33 +1,33 @@
 'use client';
 
-import { ChatKit, useChatKit } from '@openai/chatkit-react';
+import { useEffect } from 'react';
 
 export default function Home() {
-  const { control } = useChatKit({
-    api: {
-      async getClientSecret(existing: string | null) {
-        if (existing) {
-          return existing;
-        }
-
+  useEffect(() => {
+    const initChat = async () => {
+      try {
         const res = await fetch('/api/chatkit/session', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
         });
-        const { client_secret } = await res.json();
-        return client_secret;
-      },
-    },
-  });
+        const data = await res.json();
+        console.log('Session created:', data.client_secret);
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    };
+
+    initChat();
+  }, []);
 
   return (
-    <div style={{ fontFamily: 'Arial, sans-serif', padding: '20px', height: '100vh' }}>
-      <h1>ChatKit Agent</h1>
-      <div style={{ height: 'calc(100vh - 100px)' }}>
-        <ChatKit control={control} />
-      </div>
+    <div style={{ padding: '20px' }}>
+      <h1>Superko ChatKit</h1>
+      <p>ChatKit widget will appear below:</p>
+      <iframe
+        src={`https://chatkit.openai.com/embed?workflow_id=wf_694eaa37cbd0819082a033c03a980cda05ca5c92ab37fcea`}
+        style={{ width: '100%', height: '600px', border: 'none' }}
+        title="ChatKit"
+      />
     </div>
   );
 }
